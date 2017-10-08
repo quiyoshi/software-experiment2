@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
 
-import lang.*;
+import lang.Tokenizer;
 
 public class CTokenizer extends Tokenizer<CToken, CParseContext> {
 	private int			lineNo, colNo;
@@ -85,6 +85,16 @@ public class CTokenizer extends Tokenizer<CToken, CParseContext> {
 					startCol = colNo - 1;
 					text.append(ch);
 					state = 5;
+				} else if (ch == '-') {
+					startCol = colNo - 1;
+					text.append(ch);
+					state = 6;
+				} else if (ch == '*') {
+					startCol = colNo - 1;
+					state = 7;
+				} else if (ch == '/') {
+					startCol = colNo - 1;
+					state = 8;
 				} else {			// ヘンな文字を読んだ
 					startCol = colNo - 1;
 					text.append(ch);
@@ -115,6 +125,56 @@ public class CTokenizer extends Tokenizer<CToken, CParseContext> {
 			case 5:					// +を読んだ
 				tk = new CToken(CToken.TK_PLUS, lineNo, startCol, "+");
 				accept = true;
+				break;
+			case 6:                // -を読んだ
+				tk = new CToken(CToken.TK_MINUS, lineNo, startCol, "-");
+				accept = true;
+				break;
+			case 7:                // *を読んだ
+				tk = new CToken(CToken.TK_MUL, lineNo, startCol, "*");
+				accept = true;
+				break;
+			case 8:                // /を読んだ
+				ch = readChar();
+				if(ch == '/'){
+					state = 9;
+				} else if(ch == '*'){
+					state = 10;
+				} else {
+					text.append(ch);
+					backChar(ch);
+					tk = new CToken(CToken.TK_DIV, lineNo, startCol, "/");
+					accept = true;
+				}
+				break;
+			case 9:                // コメント（単一行）
+				ch = readChar();
+				if(ch == '\n'){
+					state = 0;
+				} else if(ch == (char) -1)  {
+					state = 1;
+				} else {
+				}
+				break;
+			case 10:               // コメント（複数行）の開始
+				ch = readChar();
+				if(ch == '*'){     // '*'/
+					state = 11;
+				} else if(ch == (char) -1) {  // EOF
+					state = 1;
+			    } else {
+				}
+				break;
+			case 11:               // コメント（複数行）終わり
+				ch = readChar();
+				if(ch == '/'){     // *'/'
+					state = 0;
+				} else if(ch == (char) -1) {  // EOF
+					state = 1;
+				} else if(ch == '*') {
+				} else {           // 終わりの記号（*/）でなければ復帰
+					state = 10;
+				}
 				break;
 			}
 		}
