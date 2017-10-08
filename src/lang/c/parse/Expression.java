@@ -2,8 +2,12 @@ package lang.c.parse;
 
 import java.io.PrintStream;
 
-import lang.*;
-import lang.c.*;
+import lang.FatalErrorException;
+import lang.c.CParseContext;
+import lang.c.CParseRule;
+import lang.c.CToken;
+import lang.c.CTokenizer;
+import lang.c.CType;
 
 public class Expression extends CParseRule {
 	// expression ::= term { expressionAdd }
@@ -17,12 +21,12 @@ public class Expression extends CParseRule {
 	public void parse(CParseContext pcx) throws FatalErrorException {
 		// ここにやってくるときは、必ずisFirst()が満たされている
 		CParseRule term = null, list = null;
-		term = new Term(pcx);
-		term.parse(pcx);
+		term = new Term(pcx);  // term用の節点を作る
+		term.parse(pcx); // termの解析を行う
 		CTokenizer ct = pcx.getTokenizer();
 		CToken tk = ct.getCurrentToken(pcx);
 		while (ExpressionAdd.isFirst(tk)) {
-			list = new ExpressionAdd(pcx, term);
+			list = new ExpressionAdd(pcx, term); //ExpressionAdd用の節点を作る（解析済みのtermを渡す）
 			list.parse(pcx);
 			term = list;
 			tk = ct.getCurrentToken(pcx);
