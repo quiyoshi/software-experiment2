@@ -1,6 +1,7 @@
 package lang.c;
 
-import lang.*;
+import lang.FatalErrorException;
+import lang.IOContext;
 
 public class TestCToken {
 	private static class TestTokenizer extends CParseRule {
