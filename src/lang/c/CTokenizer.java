@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
 
+import lang.FatalErrorException;
 import lang.Tokenizer;
 
 public class CTokenizer extends Tokenizer<CToken, CParseContext> {
@@ -58,6 +59,17 @@ public class CTokenizer extends Tokenizer<CToken, CParseContext> {
 		in = pctx.getIOContext().getInStream();
 		err = pctx.getIOContext().getErrStream();
 		currentTk = readToken();
+		if(currentTk.getType() == CToken.TK_NUM){			//16ビット
+			int range = (int) Math.pow(2, 15);
+			try {
+				if(currentTk.getIntValue() <= range && currentTk.getIntValue() >= -range + 1) {
+				} else {
+					pctx.fatalError(currentTk.toExplainString() + "扱える数値は16ビットです");
+				}
+			} catch (FatalErrorException e) {
+				e.printStackTrace();
+			}
+		}
 //		System.out.println("Token='" + currentTk.toString());
 		return currentTk;
 	}
@@ -77,7 +89,7 @@ public class CTokenizer extends Tokenizer<CToken, CParseContext> {
 				} else if (ch == (char) -1) {	// EOF
 					startCol = colNo - 1;
 					state = 1;
-				} else if (ch >= '0' && ch <= '9') {
+				} else if (ch >= '1' && ch <= '9') {
 					startCol = colNo - 1;
 					text.append(ch);
 					state = 3;
@@ -95,6 +107,14 @@ public class CTokenizer extends Tokenizer<CToken, CParseContext> {
 				} else if (ch == '/') {
 					startCol = colNo - 1;
 					state = 8;
+				} else if (ch == '&') {
+					startCol = colNo - 1;
+					text.append(ch);
+					state = 15;
+				} else if (ch == '0') {
+				    startCol = colNo - 1;
+					text.append(ch);
+					state = 12;
 				} else {			// ヘンな文字を読んだ
 					startCol = colNo - 1;
 					text.append(ch);
@@ -175,6 +195,41 @@ public class CTokenizer extends Tokenizer<CToken, CParseContext> {
 				} else {           // 終わりの記号（*/）でなければ復帰
 					state = 10;
 				}
+				break;
+			case 12:				// 数（8進数 or 16進数 or 0）の開始
+				ch = readChar();
+				if(ch == 'x' || ch == 'X'){      // 数（16進数）の開始
+					text.append(ch);
+					state = 14;
+				} else if(ch >= '0' && ch <= '9'){  // 数（8進数）の開始
+					text.append(ch);
+					state = 13;
+				} else {           //0
+					state = 4;
+					backChar(ch);
+				}
+				break;
+			case 13:				// 数（8進数）の開始
+				ch = readChar();
+				if(ch >= '0' && ch <= '9'){
+					text.append(ch);
+				} else {
+					state = 4;
+					backChar(ch);
+				}
+				break;
+			case 14:				// 数（16進数）の開始
+				ch = readChar();
+				if((ch >= '0' && ch <= '9') || (ch >= 'a' && ch <= 'f')){
+					text.append(ch);
+				} else  {
+					state = 4;
+					backChar(ch);
+				}
+				break;
+			case 15:				// アドレス値（&）
+				tk = new CToken(CToken.TK_AMP, lineNo, startCol, text.toString());
+				accept = true;
 				break;
 			}
 		}
