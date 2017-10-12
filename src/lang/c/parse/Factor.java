@@ -7,6 +7,7 @@ import lang.c.CParseContext;
 import lang.c.CParseRule;
 import lang.c.CToken;
 import lang.c.CTokenizer;
+import lang.c.CType;
 
 public class Factor extends CParseRule {
 	// factor ::= plusFactor | minusFactor | unsignedFactor
@@ -76,8 +77,12 @@ class PlusFactor extends CParseRule {
 	public void semanticCheck(CParseContext pcx) throws FatalErrorException {
 		if (factor != null) {
 			factor.semanticCheck(pcx);
-			this.setCType(factor.getCType());		// factor の型をそのままコピー
-			this.setConstant(factor.isConstant());
+			if(factor.getCType().getType() == CType.T_int){
+				this.setCType(factor.getCType());		// factor の型をそのままコピー
+				this.setConstant(factor.isConstant());
+			} else {
+				pcx.fatalError(plus.toExplainString() + "式には演算型が必要です");
+			}
 		}
 	}
 
@@ -116,15 +121,22 @@ class MinusFactor extends CParseRule {
 	public void semanticCheck(CParseContext pcx) throws FatalErrorException {
 		if (factor != null) {
 			factor.semanticCheck(pcx);
-			this.setCType(factor.getCType());		// factor の型をそのままコピー
-			this.setConstant(factor.isConstant());
+			if(factor.getCType().getType() == CType.T_int){
+				this.setCType(factor.getCType());		// factor の型をそのままコピー
+				this.setConstant(factor.isConstant());
+			} else {
+				pcx.fatalError(minus.toExplainString() + "式には演算型が必要です");
+			}
 		}
 	}
 
 	public void codeGen(CParseContext pcx) throws FatalErrorException {
 		PrintStream o = pcx.getIOContext().getOutStream();
 		o.println(";;; factor starts");
-		if (factor != null) { factor.codeGen(pcx); }
+		if (factor != null) {
+			factor.codeGen(pcx);
+			o.println("\tJSR\tDIV\t; TermDiv:");  //符号の反転を行うコード
+		}
 		o.println(";;; factor completes");
 	}
 }

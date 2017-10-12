@@ -1,4 +1,4 @@
-- 3  * (-017 - 32767) //sec
+0 - 100 //sec
 /*  for test
     multi
     text  */
