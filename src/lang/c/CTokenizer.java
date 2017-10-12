@@ -107,14 +107,22 @@ public class CTokenizer extends Tokenizer<CToken, CParseContext> {
 				} else if (ch == '/') {
 					startCol = colNo - 1;
 					state = 8;
-				} else if (ch == '&') {
-					startCol = colNo - 1;
-					text.append(ch);
-					state = 15;
 				} else if (ch == '0') {
 				    startCol = colNo - 1;
 					text.append(ch);
 					state = 12;
+				} else if (ch == '&') {
+					startCol = colNo - 1;
+					text.append(ch);
+					state = 15;
+				} else if (ch == '(') {
+					startCol = colNo - 1;
+					text.append(ch);
+					state = 16;
+				} else if (ch == ')') {
+					startCol = colNo - 1;
+					text.append(ch);
+					state = 17;
 				} else {			// ヘンな文字を読んだ
 					startCol = colNo - 1;
 					text.append(ch);
@@ -229,6 +237,14 @@ public class CTokenizer extends Tokenizer<CToken, CParseContext> {
 				break;
 			case 15:				// アドレス値（&）
 				tk = new CToken(CToken.TK_AMP, lineNo, startCol, text.toString());
+				accept = true;
+				break;
+			case 16:				// 左括弧
+				tk = new CToken(CToken.TK_LPAR, lineNo, startCol, text.toString());
+				accept = true;
+				break;
+			case 17:				// 右括弧
+				tk = new CToken(CToken.TK_RPAR, lineNo, startCol, text.toString());
 				accept = true;
 				break;
 			}
