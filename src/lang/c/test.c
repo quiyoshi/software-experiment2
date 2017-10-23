@@ -1,4 +1,3 @@
-0 - 100 //sec
-/*  for test
+-100 * 2/*  for test
     multi
     text  */

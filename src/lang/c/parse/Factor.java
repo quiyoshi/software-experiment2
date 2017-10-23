@@ -88,9 +88,9 @@ class PlusFactor extends CParseRule {
 
 	public void codeGen(CParseContext pcx) throws FatalErrorException {
 		PrintStream o = pcx.getIOContext().getOutStream();
-		o.println(";;; factor starts");
+		o.println(";;; plusFactor starts");
 		if (factor != null) { factor.codeGen(pcx); }
-		o.println(";;; factor completes");
+		o.println(";;; plusFactor completes");
 	}
 }
 
@@ -132,11 +132,14 @@ class MinusFactor extends CParseRule {
 
 	public void codeGen(CParseContext pcx) throws FatalErrorException {
 		PrintStream o = pcx.getIOContext().getOutStream();
-		o.println(";;; factor starts");
+		o.println(";;; minusFactor starts");
 		if (factor != null) {
 			factor.codeGen(pcx);
-			o.println("\tJSR\tDIV\t; TermDiv:");  //符号の反転を行うコード
+			o.println("\tMOV\t#0, (R6)+\t; 符号を反転");  //符号の反転を行うコード
+			o.println("\tMOV\t-(R6), R0\t; 符号を反転");
+			o.println("\tSUB\t-(R6), R0\t; 符号を反転");
+			o.println("\tMOV\tR0, (R6)+\t; 符号を反転");
 		}
-		o.println(";;; factor completes");
+		o.println(";;; minusFactor completes");
 	}
 }
