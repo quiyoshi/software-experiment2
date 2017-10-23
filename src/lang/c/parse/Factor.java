@@ -7,6 +7,7 @@ import lang.c.CParseContext;
 import lang.c.CParseRule;
 import lang.c.CToken;
 import lang.c.CTokenizer;
+import lang.c.CType;
 
 public class Factor extends CParseRule {
 	// factor ::= plusFactor | minusFactor | unsignedFactor
@@ -76,16 +77,20 @@ class PlusFactor extends CParseRule {
 	public void semanticCheck(CParseContext pcx) throws FatalErrorException {
 		if (factor != null) {
 			factor.semanticCheck(pcx);
-			this.setCType(factor.getCType());		// factor の型をそのままコピー
-			this.setConstant(factor.isConstant());
+			if(factor.getCType().getType() == CType.T_int){
+				this.setCType(factor.getCType());		// factor の型をそのままコピー
+				this.setConstant(factor.isConstant());
+			} else {
+				pcx.fatalError(plus.toExplainString() + "式には演算型が必要です");
+			}
 		}
 	}
 
 	public void codeGen(CParseContext pcx) throws FatalErrorException {
 		PrintStream o = pcx.getIOContext().getOutStream();
-		o.println(";;; factor starts");
+		o.println(";;; plusFactor starts");
 		if (factor != null) { factor.codeGen(pcx); }
-		o.println(";;; factor completes");
+		o.println(";;; plusFactor completes");
 	}
 }
 
@@ -116,15 +121,25 @@ class MinusFactor extends CParseRule {
 	public void semanticCheck(CParseContext pcx) throws FatalErrorException {
 		if (factor != null) {
 			factor.semanticCheck(pcx);
-			this.setCType(factor.getCType());		// factor の型をそのままコピー
-			this.setConstant(factor.isConstant());
+			if(factor.getCType().getType() == CType.T_int){
+				this.setCType(factor.getCType());		// factor の型をそのままコピー
+				this.setConstant(factor.isConstant());
+			} else {
+				pcx.fatalError(minus.toExplainString() + "式には演算型が必要です");
+			}
 		}
 	}
 
 	public void codeGen(CParseContext pcx) throws FatalErrorException {
 		PrintStream o = pcx.getIOContext().getOutStream();
-		o.println(";;; factor starts");
-		if (factor != null) { factor.codeGen(pcx); }
-		o.println(";;; factor completes");
+		o.println(";;; minusFactor starts");
+		if (factor != null) {
+			factor.codeGen(pcx);
+			o.println("\tMOV\t#0, (R6)+\t; 符号を反転");  //符号の反転を行うコード
+			o.println("\tMOV\t-(R6), R0\t; 符号を反転");
+			o.println("\tSUB\t-(R6), R0\t; 符号を反転");
+			o.println("\tMOV\tR0, (R6)+\t; 符号を反転");
+		}
+		o.println(";;; minusFactor completes");
 	}
 }
