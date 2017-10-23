@@ -1,4 +1,3 @@
-&0Xf + 017 - 32767 //sec
-/*  for test
+-100 * 2/*  for test
     multi
     text  */
