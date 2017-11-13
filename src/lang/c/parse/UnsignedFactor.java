@@ -10,13 +10,13 @@ import lang.c.CTokenizer;
 import lang.c.CType;
 
 public class UnsignedFactor extends CParseRule {
-	// unsignedFactor ::= factorAMP | number | LPAR expression RPAR
+	// unsignedFactor ::= factorAMP | number | LPAR expression RPAR | addressToValue
 
 	private CParseRule number;
 	public UnsignedFactor(CParseContext pcx) {
 	}
 	public static boolean isFirst(CToken tk) {
-		return FactorAMP.isFirst(tk) || Number.isFirst(tk) || tk.getType() == CToken.TK_LPAR;
+		return FactorAMP.isFirst(tk) || Number.isFirst(tk) || tk.getType() == CToken.TK_LPAR || AddressToValue.isFirst(tk);
 	}
 	public void parse(CParseContext pcx) throws FatalErrorException {
 		// ここにやってくるときは、必ずisFirst()が満たされている
@@ -28,7 +28,7 @@ public class UnsignedFactor extends CParseRule {
 		} else if(Number.isFirst(tk)){
 			number = new Number(pcx);
 			number.parse(pcx);
-		} else {
+		} else if(tk.getType() == CToken.TK_LPAR) {
 			tk = ct.getNextToken(pcx);
 			if(Expression.isFirst(tk)){
 				number = new Expression(pcx);
@@ -42,6 +42,9 @@ public class UnsignedFactor extends CParseRule {
 			} else {
 				pcx.fatalError(tk.toExplainString() + "(の後ろはexpressionです");
 			}
+		} else if(AddressToValue.isFirst(tk)){
+			number = new AddressToValue(pcx);
+			number.parse(pcx);
 		}
 	}
 
@@ -62,7 +65,7 @@ public class UnsignedFactor extends CParseRule {
 }
 
 class FactorAMP extends CParseRule {
-	// factorAMP ::= AMP number
+	// factorAMP ::= AMP ( number | primary )
 
 	private CToken amp;
 	private CParseRule number;
@@ -82,8 +85,11 @@ class FactorAMP extends CParseRule {
 		if (Number.isFirst(tk)) {
 			number = new Number(pcx);
 			number.parse(pcx);
+		} else if(Primary.isFirst(tk)){
+			number = new Primary(pcx);
+			number.parse(pcx);
 		} else {
-			pcx.fatalError(tk.toExplainString() + "&の後ろはnumberです");
+			pcx.fatalError(tk.toExplainString() + "&の後ろはnumberかprimaryです");
 		}
 	}
 

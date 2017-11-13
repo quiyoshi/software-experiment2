@@ -1,3 +1,4 @@
--100 * 2/*  for test
+var[2] * &car + *def
+/*  for test
     multi
     text  */
