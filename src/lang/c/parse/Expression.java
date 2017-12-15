@@ -177,8 +177,8 @@ class ExpressionSub extends CParseRule {
 	public void codeGen(CParseContext pcx) throws FatalErrorException {
 		PrintStream o = pcx.getIOContext().getOutStream();
 		if (left != null && right != null) {
-			left.codeGen(pcx);
 			right.codeGen(pcx);
+			left.codeGen(pcx);
 			o.println("\tMOV\t-(R6), R0\t; ExpressionSub: ２数を取り出して、引き、積む<" + minus.toExplainString() + ">");
 			o.println("\tSUB\t-(R6), R0\t; ExpressionSub:");
 			o.println("\tMOV\tR0, (R6)+\t; ExpressionSub:");
