@@ -96,8 +96,20 @@ class FactorAMP extends CParseRule {
 	public void semanticCheck(CParseContext pcx) throws FatalErrorException {
 		if (number != null) {
 			number.semanticCheck(pcx);
-			setCType(CType.getCType(CType.T_pint));		// number の型を int* に
-			setConstant(number.isConstant());	// number は常に定数
+			if(number instanceof Primary){
+				if(((Primary) number).getChildClass() instanceof PrimaryMult){
+					pcx.fatalError(amp.toExplainString() + "&*は許されていません");
+				} else {
+
+				}
+			}
+
+			if(number.getCType().getType() == CType.T_int && number.isConstant()){
+				setCType(CType.getCType(CType.T_pint));
+				setConstant(number.isConstant());	// number は常に変数
+			} else {
+				pcx.fatalError(amp.toExplainString() + "&の後ろはint型変数です");
+			}
 		}
 	}
 

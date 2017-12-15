@@ -7,6 +7,7 @@ import lang.c.CParseContext;
 import lang.c.CParseRule;
 import lang.c.CToken;
 import lang.c.CTokenizer;
+import lang.c.CType;
 
 public class Variable extends CParseRule{
 	// variable ::= ident [ array ]
@@ -45,6 +46,7 @@ public class Variable extends CParseRule{
 class Array extends CParseRule{
 	// array ::= LBRA expression RBRA
 
+	private CToken bra;
 	private CParseRule expression;
 	public Array(CParseContext pcx) {
 	}
@@ -54,9 +56,9 @@ class Array extends CParseRule{
 	public void parse(CParseContext pcx) throws FatalErrorException {
 		// ここにやってくるときは、必ずisFirst()が満たされている
 		CTokenizer ct = pcx.getTokenizer();
-		CToken tk = ct.getCurrentToken(pcx);
+		bra = ct.getCurrentToken(pcx);
+		CToken tk = ct.getNextToken(pcx);
 
-		tk = ct.getNextToken(pcx);
 		if(Expression.isFirst(tk)){
 			expression = new Expression(pcx);
 			expression.parse(pcx);
@@ -72,8 +74,12 @@ class Array extends CParseRule{
 	}
 
 	public void semanticCheck(CParseContext pcx) throws FatalErrorException {
-		if (expression != null) {
-
+		expression.semanticCheck(pcx);
+		if (expression != null && expression.getCType().getType() == CType.T_int) {
+			this.setCType(expression.getCType());
+			this.setConstant(false);
+		} else {
+			pcx.fatalError(bra.toExplainString() + "配列の添字はint型です");
 		}
 	}
 

@@ -20,7 +20,7 @@ public class Ident  extends CParseRule {
 		// ここにやってくるときは、必ずisFirst()が満たされている
 		CTokenizer ct = pcx.getTokenizer();
 		CToken tk = ct.getCurrentToken(pcx);
-		ident = tk;
+		ident = tk;							//ここで綴りを保存しておく
 		tk = ct.getNextToken(pcx);
 	}
 
@@ -30,5 +30,10 @@ public class Ident  extends CParseRule {
 
 	public void codeGen(CParseContext pcx) throws FatalErrorException {
 		PrintStream o = pcx.getIOContext().getOutStream();
+		o.println(";;; ident starts");
+		if(ident != null) {
+			o.println("\tMOV\t#" + ident.getText() + ", (R6)+\t; Ident: 変数アドレスを積む<" + ident.toExplainString() + ">");
+		}
+		o.println(";;; ident completes");
 	}
 }

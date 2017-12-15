@@ -38,6 +38,10 @@ public class Primary extends CParseRule {
 	public void codeGen(CParseContext pcx) throws FatalErrorException {
 		PrintStream o = pcx.getIOContext().getOutStream();
 	}
+
+	protected CParseRule getChildClass() {
+		return primary;
+	}
 }
 
 class PrimaryMult  extends CParseRule {
