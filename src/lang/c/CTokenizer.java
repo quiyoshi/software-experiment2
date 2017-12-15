@@ -181,7 +181,7 @@ public class CTokenizer extends Tokenizer<CToken, CParseContext> {
 				if(ch == '*'){     // '*'/
 					state = 11;
 				} else if(ch == (char) -1) {  // EOF
-					state = 1;
+					state = 2;
 			    } else {
 				}
 				break;
@@ -190,7 +190,7 @@ public class CTokenizer extends Tokenizer<CToken, CParseContext> {
 				if(ch == '/'){     // *'/'
 					state = 0;
 				} else if(ch == (char) -1) {  // EOF
-					state = 1;
+					state = 2;
 				} else if(ch == '*') {
 				} else {           // 終わりの記号（*/）でなければ復帰
 					state = 10;
