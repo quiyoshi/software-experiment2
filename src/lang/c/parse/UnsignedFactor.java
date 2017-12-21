@@ -99,16 +99,14 @@ class FactorAMP extends CParseRule {
 			if(number instanceof Primary){
 				if(((Primary) number).getChildClass() instanceof PrimaryMult){
 					pcx.fatalError(amp.toExplainString() + "&*は許されていません");
-				} else {
-
 				}
 			}
 
-			if(number.getCType().getType() == CType.T_int && number.isConstant()){
-				setCType(CType.getCType(CType.T_pint));
+			if(number.getCType() == CType.getCType(CType.T_int) && !number.isConstant()){
+				setCType(number.getCType());
 				setConstant(number.isConstant());	// number は常に変数
 			} else {
-				pcx.fatalError(amp.toExplainString() + "&の後ろはint型変数です");
+				pcx.fatalError(amp.toExplainString() + "&の後ろはint型変数にしてください");
 			}
 		}
 	}

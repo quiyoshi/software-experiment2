@@ -7,6 +7,7 @@ import lang.c.CParseContext;
 import lang.c.CParseRule;
 import lang.c.CToken;
 import lang.c.CTokenizer;
+import lang.c.CType;
 
 public class Primary extends CParseRule {
 	// primary ::= primaryMult | variable
@@ -31,7 +32,9 @@ public class Primary extends CParseRule {
 
 	public void semanticCheck(CParseContext pcx) throws FatalErrorException {
 		if (primary != null) {
-
+			primary.semanticCheck(pcx);
+			this.setCType(primary.getCType());
+			this.setConstant(primary.isConstant());
 		}
 	}
 
@@ -46,6 +49,7 @@ public class Primary extends CParseRule {
 
 class PrimaryMult  extends CParseRule {
 	// primaryMULT ::= MULT variable
+
 	private CParseRule variable;
 	private CToken mult;
 	public PrimaryMult(CParseContext pcx) {
@@ -70,7 +74,12 @@ class PrimaryMult  extends CParseRule {
 
 	public void semanticCheck(CParseContext pcx) throws FatalErrorException {
 		if (variable != null) {
-
+			variable.semanticCheck(pcx);
+			if(variable.getCType() == CType.getCType(CType.T_int)){
+				pcx.fatalError(mult.toExplainString() + "int型をポインタ参照できません");
+			}
+			this.setCType(variable.getCType());
+			this.setConstant(variable.isConstant());
 		}
 	}
 

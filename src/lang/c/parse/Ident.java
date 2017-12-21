@@ -7,6 +7,7 @@ import lang.c.CParseContext;
 import lang.c.CParseRule;
 import lang.c.CToken;
 import lang.c.CTokenizer;
+import lang.c.CType;
 
 public class Ident  extends CParseRule {
 	// ident ::= IDENT
@@ -25,7 +26,8 @@ public class Ident  extends CParseRule {
 	}
 
 	public void semanticCheck(CParseContext pcx) throws FatalErrorException {
-
+		this.setCType(CType.getCType(CType.T_int));			//実験4時点では変数宣言が行えないため、仮定しておく
+		this.setConstant(false);			//変数は定数ではない
 	}
 
 	public void codeGen(CParseContext pcx) throws FatalErrorException {

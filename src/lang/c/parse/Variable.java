@@ -12,6 +12,7 @@ import lang.c.CType;
 public class Variable extends CParseRule{
 	// variable ::= ident [ array ]
 
+	private CToken arr;
 	private CParseRule ident, array;
 	public Variable(CParseContext pcx) {
 	}
@@ -22,6 +23,7 @@ public class Variable extends CParseRule{
 		// ここにやってくるときは、必ずisFirst()が満たされている
 		CTokenizer ct = pcx.getTokenizer();
 		CToken tk = ct.getCurrentToken(pcx);
+		arr = tk;
 		ident = new Ident(pcx);
 		ident.parse(pcx);
 
@@ -33,7 +35,18 @@ public class Variable extends CParseRule{
 	}
 
 	public void semanticCheck(CParseContext pcx) throws FatalErrorException {
-		if (array != null) {
+		if (ident != null) {
+			ident.semanticCheck(pcx);
+			this.setCType(ident.getCType());
+			this.setConstant(ident.isConstant());
+
+			if(array != null){
+				array.semanticCheck(pcx);
+			} else {
+				if(this.getCType() == CType.getCType(CType.T_aint)){
+					pcx.fatalError(arr.toExplainString() + "配列名の識別子が誤っています");
+				}
+			}
 
 		}
 	}
@@ -79,7 +92,7 @@ class Array extends CParseRule{
 			this.setCType(expression.getCType());
 			this.setConstant(false);
 		} else {
-			pcx.fatalError(bra.toExplainString() + "配列の添字はint型です");
+			pcx.fatalError(bra.toExplainString() + "配列の添字にはint型を入れてください");
 		}
 	}
 
