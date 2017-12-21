@@ -83,9 +83,9 @@ class TermMult extends CParseRule {
 		final int s[][] = {
 			//	T_err			T_int			T_pint			T_aint			T_apint
 			{	CType.T_err,	CType.T_err,	CType.T_err,	CType.T_err,	CType.T_err},	// T_err
-			{	CType.T_err,	CType.T_int,	CType.T_err	,	CType.T_err,	CType.T_err},	// T_int
+			{	CType.T_err,	CType.T_int,	CType.T_err	,	CType.T_int,	CType.T_err},	// T_int
 			{	CType.T_err,	CType.T_err,	CType.T_err,	CType.T_err,	CType.T_err},	// T_pint
-			{	CType.T_err,	CType.T_err,	CType.T_err,	CType.T_err,	CType.T_err},	// T_aint
+			{	CType.T_err,	CType.T_int,	CType.T_err,	CType.T_int,	CType.T_err},	// T_aint
 			{	CType.T_err,	CType.T_err,	CType.T_err,	CType.T_err,	CType.T_err},	// T_apint
 		};
 		int lt = 0, rt = 0;
@@ -154,9 +154,9 @@ class TermDiv extends CParseRule {
 		final int s[][] = {
 			//	T_err			T_int			T_pint			T_aint			T_apint
 			{	CType.T_err,	CType.T_err,	CType.T_err,	CType.T_err,	CType.T_err},	// T_err
-			{	CType.T_err,	CType.T_int,	CType.T_err	,	CType.T_err,	CType.T_err},	// T_int
+			{	CType.T_err,	CType.T_int,	CType.T_err	,	CType.T_int,	CType.T_err},	// T_int
 			{	CType.T_err,	CType.T_err,	CType.T_err,	CType.T_err,	CType.T_err},	// T_pint
-			{	CType.T_err,	CType.T_err,	CType.T_err,	CType.T_err,	CType.T_err},	// T_aint
+			{	CType.T_err,	CType.T_int,	CType.T_err,	CType.T_int,	CType.T_err},	// T_aint
 			{	CType.T_err,	CType.T_err,	CType.T_err,	CType.T_err,	CType.T_err},	// T_apint
 		};
 		int lt = 0, rt = 0;

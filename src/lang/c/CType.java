@@ -11,6 +11,8 @@ public class CType {
 		new CType(T_err,	"error"),
 		new CType(T_int,	"int"),
 		new CType(T_pint,	"int*"),
+		new CType(T_aint,	"int[]"),
+		new CType(T_apint,	"int*[]"),
 	};
 
 	private int type;
