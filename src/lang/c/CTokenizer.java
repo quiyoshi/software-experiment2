@@ -123,6 +123,18 @@ public class CTokenizer extends Tokenizer<CToken, CParseContext> {
 					startCol = colNo - 1;
 					text.append(ch);
 					state = 17;
+				} else if (ch == '[') {
+					startCol = colNo - 1;
+					text.append(ch);
+					state = 18;
+				} else if (ch == ']') {
+					startCol = colNo - 1;
+					text.append(ch);
+					state = 19;
+				} else if ((ch >= 'A' && ch <= 'Z') || (ch >= 'a' && ch <= 'z')){
+					startCol = colNo - 1;
+					text.append(ch);
+					state = 20;
 				} else {			// ヘンな文字を読んだ
 					startCol = colNo - 1;
 					text.append(ch);
@@ -189,7 +201,7 @@ public class CTokenizer extends Tokenizer<CToken, CParseContext> {
 				if(ch == '*'){     // '*'/
 					state = 11;
 				} else if(ch == (char) -1) {  // EOF
-					state = 1;
+					state = 2;
 			    } else {
 				}
 				break;
@@ -198,7 +210,7 @@ public class CTokenizer extends Tokenizer<CToken, CParseContext> {
 				if(ch == '/'){     // *'/'
 					state = 0;
 				} else if(ch == (char) -1) {  // EOF
-					state = 1;
+					state = 2;
 				} else if(ch == '*') {
 				} else {           // 終わりの記号（*/）でなければ復帰
 					state = 10;
@@ -245,6 +257,27 @@ public class CTokenizer extends Tokenizer<CToken, CParseContext> {
 				break;
 			case 17:				// 右括弧
 				tk = new CToken(CToken.TK_RPAR, lineNo, startCol, text.toString());
+				accept = true;
+				break;
+			case 18:				// 左ブラケット
+				tk = new CToken(CToken.TK_LBRA, lineNo, startCol, text.toString());
+				accept = true;
+				break;
+			case 19:				// 右ブラケット
+				tk = new CToken(CToken.TK_RBRA, lineNo, startCol, text.toString());
+				accept = true;
+				break;
+			case 20:				// 識別子の開始
+				ch = readChar();
+				if ((ch >= 'A' && ch <= 'Z') || (ch >= 'a' && ch <= 'z') || (ch >= '0' && ch <= '9')) {
+					text.append(ch);
+				} else {
+					backChar(ch);
+					state = 21;
+				}
+				break;				// 識別子の終わり
+			case 21:
+				tk = new CToken(CToken.TK_IDENT, lineNo, startCol, text.toString());
 				accept = true;
 				break;
 			}

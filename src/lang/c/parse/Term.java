@@ -81,10 +81,12 @@ class TermMult extends CParseRule {
 	public void semanticCheck(CParseContext pcx) throws FatalErrorException {
 		// 掛け算の型計算規則
 		final int s[][] = {
-			//	T_err			T_int			T_pint
-			{	CType.T_err,	CType.T_err,	CType.T_err},	// T_err
-			{	CType.T_err,	CType.T_int,	CType.T_err},	// T_int
-			{	CType.T_err,	CType.T_err,	CType.T_err},	// T_pint
+			//	T_err			T_int			T_pint			T_aint			T_apint
+			{	CType.T_err,	CType.T_err,	CType.T_err,	CType.T_err,	CType.T_err},	// T_err
+			{	CType.T_err,	CType.T_int,	CType.T_err	,	CType.T_int,	CType.T_err},	// T_int
+			{	CType.T_err,	CType.T_err,	CType.T_err,	CType.T_err,	CType.T_err},	// T_pint
+			{	CType.T_err,	CType.T_int,	CType.T_err,	CType.T_int,	CType.T_err},	// T_aint
+			{	CType.T_err,	CType.T_err,	CType.T_err,	CType.T_err,	CType.T_err},	// T_apint
 		};
 		int lt = 0, rt = 0;
 		boolean lc = false, rc = false;
@@ -116,7 +118,9 @@ class TermMult extends CParseRule {
 		if (left != null && right != null) {
 			left.codeGen(pcx);
 			right.codeGen(pcx);
-			o.println("\tJSR\tMUL\t; TermMult:");
+			o.println("\tJSR\tMUL\t        ; TermMult:");
+			o.println("\tSUB\t#2, R6\t ; TermMult:");
+			o.println("\tMOV\tR0, (R6)+\t; TermMult:");
 		}
 		o.println(";;; termMult completes");
 	}
@@ -150,10 +154,12 @@ class TermDiv extends CParseRule {
 	public void semanticCheck(CParseContext pcx) throws FatalErrorException {
 		// 割り算の型計算規則
 		final int s[][] = {
-			//	T_err			T_int			T_pint
-			{	CType.T_err,	CType.T_err,	CType.T_err},	// T_err
-			{	CType.T_err,	CType.T_int,	CType.T_err},	// T_int
-			{	CType.T_err,	CType.T_err,	CType.T_err},	// T_pint
+			//	T_err			T_int			T_pint			T_aint			T_apint
+			{	CType.T_err,	CType.T_err,	CType.T_err,	CType.T_err,	CType.T_err},	// T_err
+			{	CType.T_err,	CType.T_int,	CType.T_err	,	CType.T_int,	CType.T_err},	// T_int
+			{	CType.T_err,	CType.T_err,	CType.T_err,	CType.T_err,	CType.T_err},	// T_pint
+			{	CType.T_err,	CType.T_int,	CType.T_err,	CType.T_int,	CType.T_err},	// T_aint
+			{	CType.T_err,	CType.T_err,	CType.T_err,	CType.T_err,	CType.T_err},	// T_apint
 		};
 		int lt = 0, rt = 0;
 		boolean lc = false, rc = false;
@@ -183,9 +189,11 @@ class TermDiv extends CParseRule {
 		PrintStream o = pcx.getIOContext().getOutStream();
 		o.println(";;; termDiv starts");
 		if (left != null && right != null) {
-			left.codeGen(pcx);
 			right.codeGen(pcx);
-			o.println("\tJSR\tDIV\t; TermDiv:");
+			left.codeGen(pcx);
+			o.println("\tJSR\tDIV\t        ; TermDiv:");
+			o.println("\tSUB\t#2, R6\t ; TermDiv:");
+			o.println("\tMOV\tR0, (R6)+\t; TermDiv:");
 		}
 		o.println(";;; termDiv completes");
 	}

@@ -81,10 +81,12 @@ class ExpressionAdd extends CParseRule {
 	public void semanticCheck(CParseContext pcx) throws FatalErrorException {
 		// 足し算の型計算規則
 		final int s[][] = {
-		//		T_err			T_int			T_pint
-			{	CType.T_err,	CType.T_err,	CType.T_err},	// T_err
-			{	CType.T_err,	CType.T_int,	CType.T_pint},	// T_int
-			{	CType.T_err,	CType.T_pint,	CType.T_err},	// T_pint
+		//		T_err			T_int			T_pint			T_aint			T_apint
+			{	CType.T_err,	CType.T_err,	CType.T_err,	CType.T_err,	CType.T_err},	// T_err
+			{	CType.T_err,	CType.T_int,	CType.T_pint,	CType.T_int,	CType.T_apint},	// T_int
+			{	CType.T_err,	CType.T_pint,	CType.T_err,	CType.T_pint,	CType.T_err},	// T_pint
+			{	CType.T_err,	CType.T_pint,	CType.T_pint,	CType.T_int,	CType.T_err},	// T_aint
+			{	CType.T_err,	CType.T_apint,	CType.T_err,	CType.T_err,	CType.T_err},	// T_apint
 		};
 		int lt = 0, rt = 0;
 		boolean lc = false, rc = false;
@@ -148,10 +150,12 @@ class ExpressionSub extends CParseRule {
 	public void semanticCheck(CParseContext pcx) throws FatalErrorException {
 		// 引き算の型計算規則
 		final int s[][] = {
-			//	T_err			T_int			T_pint			R  /  L
-			{	CType.T_err,	CType.T_err,	CType.T_err},	// T_err
-			{	CType.T_err,	CType.T_int,	CType.T_err},	// T_int
-			{	CType.T_err,	CType.T_pint,	CType.T_int},	// T_pint
+			//	T_err			T_int			T_pint			T_aint			T_apint			R  /  L
+			{	CType.T_err,	CType.T_err,	CType.T_err,	CType.T_err,	CType.T_err},	// T_err
+			{	CType.T_err,	CType.T_int,	CType.T_err,	CType.T_int,	CType.T_err},	// T_int
+			{	CType.T_err,	CType.T_pint,	CType.T_int,	CType.T_int,	CType.T_err},	// T_pint
+			{	CType.T_err,	CType.T_pint,	CType.T_int,	CType.T_int,	CType.T_err},	// T_aint
+			{	CType.T_err,	CType.T_apint,	CType.T_err,	CType.T_err,	CType.T_int},	// T_apint
 		};
 		int lt = 0, rt = 0;
 		boolean lc = false, rc = false;

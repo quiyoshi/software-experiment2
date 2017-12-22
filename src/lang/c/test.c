@@ -1,3 +1,2 @@
--100 * 2/*  for test
-    multi
-    text  */
+//123 + 21
+ar[2] + e[6]
