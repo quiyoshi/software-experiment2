@@ -36,5 +36,10 @@ public class AddressToValue extends CParseRule{
 
 	public void codeGen(CParseContext pcx) throws FatalErrorException {
 		PrintStream o = pcx.getIOContext().getOutStream();
+		if(primary != null){
+			primary.codeGen(pcx);
+			o.println("\tMOV\t-(R6), R0\t; AddressToValue:変数アドレスを値に変換");
+			o.println("\tMOV\t(R0), (R6)+\t; AddressToValue:");
+		}
 	}
 }

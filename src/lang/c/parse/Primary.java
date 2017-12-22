@@ -40,6 +40,9 @@ public class Primary extends CParseRule {
 
 	public void codeGen(CParseContext pcx) throws FatalErrorException {
 		PrintStream o = pcx.getIOContext().getOutStream();
+		if (primary != null) {
+			primary.codeGen(pcx);
+		}
 	}
 
 	protected CParseRule getChildClass() {
@@ -85,5 +88,11 @@ class PrimaryMult  extends CParseRule {
 
 	public void codeGen(CParseContext pcx) throws FatalErrorException {
 		PrintStream o = pcx.getIOContext().getOutStream();
+		if (variable != null){
+			variable.codeGen(pcx);
+			o.println("\tMOV\t-(R6), R0\t; PrimaryMult: アドレスを取り出して、内容を参照して、積む<"
+					+ mult.toExplainString() + ">");
+			o.println("\tMOV\t(R0), (R6)+\t; PrimaryMult:");
+		}
 	}
 }

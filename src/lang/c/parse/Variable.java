@@ -53,6 +53,12 @@ public class Variable extends CParseRule{
 
 	public void codeGen(CParseContext pcx) throws FatalErrorException {
 		PrintStream o = pcx.getIOContext().getOutStream();
+		if(ident != null){
+			ident.codeGen(pcx);
+		}
+		if(array != null){
+			array.codeGen(pcx);
+		}
 	}
 }
 
@@ -72,11 +78,11 @@ class Array extends CParseRule{
 		bra = ct.getCurrentToken(pcx);
 		CToken tk = ct.getNextToken(pcx);
 
-		if(Expression.isFirst(tk)){
+		if (Expression.isFirst(tk)){
 			expression = new Expression(pcx);
 			expression.parse(pcx);
 			tk = ct.getCurrentToken(pcx);
-			if(CToken.TK_RBRA == tk.getType()){
+			if (CToken.TK_RBRA == tk.getType()){
 				tk = ct.getNextToken(pcx);
 			} else {
 				pcx.fatalError(tk.toExplainString() + "expressionの後ろは]です");
@@ -98,5 +104,11 @@ class Array extends CParseRule{
 
 	public void codeGen(CParseContext pcx) throws FatalErrorException {
 		PrintStream o = pcx.getIOContext().getOutStream();
+		if (expression != null){
+			o.println(";;; array starts");
+			expression.codeGen(pcx);
+			o.println("\tADD\t-(R6), R6\t; Array:基点アドレスから変位だけSPをずらす");
+			o.println(";;; array completes");
+		}
 	}
 }
