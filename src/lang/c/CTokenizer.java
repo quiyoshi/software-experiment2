@@ -143,6 +143,10 @@ public class CTokenizer extends Tokenizer<CToken, CParseContext> {
 					startCol = colNo - 1;
 					text.append(ch);
 					state = 23;
+				} else if (ch == ',') {
+					startCol = colNo - 1;
+					text.append(ch);
+					state = 24;
 				} else {			// ヘンな文字を読んだ
 					startCol = colNo - 1;
 					text.append(ch);
@@ -283,9 +287,11 @@ public class CTokenizer extends Tokenizer<CToken, CParseContext> {
 					backChar(ch);
 					state = 21;
 				}
-				break;				// 識別子の終わり
+				break;				// 単なる識別子かキーワードかのチェック
 			case 21:
-				tk = new CToken(CToken.TK_IDENT, lineNo, startCol, text.toString());
+				String s = text.toString();
+				Integer i =  (Integer) rule.get(s);
+				tk = new CToken(((i == null) ? CToken.TK_IDENT : i.intValue()), lineNo, startCol, text.toString());
 				accept = true;
 				break;
 			case 22:				// アサイン（=）
@@ -294,6 +300,10 @@ public class CTokenizer extends Tokenizer<CToken, CParseContext> {
 				break;
 			case 23:				// セミコロン（;）
 				tk = new CToken(CToken.TK_SEMI, lineNo, startCol, text.toString());
+				accept = true;
+				break;
+			case 24:				// コンマ（,）
+				tk = new CToken(CToken.TK_COMMA, lineNo, startCol, text.toString());
 				accept = true;
 				break;
 			}

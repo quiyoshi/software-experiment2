@@ -42,6 +42,8 @@ public class StatementAssign extends CParseRule{
 		if(semi.getType() != CToken.TK_SEMI){
 			pcx.fatalError(assign.toExplainString() + ";を挿入してstatementを終了してください");
 		}
+
+		tk = ct.getNextToken(pcx);
 	}
 
 	public void semanticCheck(CParseContext pcx) throws FatalErrorException {
