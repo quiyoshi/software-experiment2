@@ -45,12 +45,29 @@ public class StatementAssign extends CParseRule{
 	}
 
 	public void semanticCheck(CParseContext pcx) throws FatalErrorException {
-		if (primary != null) {
+		if (primary != null && expression != null) {
+			primary.semanticCheck(pcx);
+			expression.semanticCheck(pcx);
 
+			if (primary.isConstant()) {
+				pcx.fatalError(assign.toExplainString() + "定数に代入はできません");
+			}
+			if (primary.getCType() != expression.getCType()) {
+				pcx.fatalError(assign.toExplainString() +
+						"左辺の型[" + primary.getCType().toString() +
+						"]に右辺の型[" + expression.getCType().toString() + "]は代入できません");
+			}
 		}
 	}
 
 	public void codeGen(CParseContext pcx) throws FatalErrorException {
 		PrintStream o = pcx.getIOContext().getOutStream();
+		if (primary != null && expression != null) {
+			expression.codeGen(pcx);
+			primary.codeGen(pcx);
+			o.println("\tMOV\t-(R6), R0\t; StatementAssign: 左辺の変数に右辺の値を書き込む");
+			o.println("\tMOV\t-(R6), (R0)\t; StatementAssign:");
+		}
+
 	}
 }

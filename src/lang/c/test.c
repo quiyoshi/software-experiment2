@@ -1,1 +1,1 @@
-state = &var;
+state = 3 + 4;
