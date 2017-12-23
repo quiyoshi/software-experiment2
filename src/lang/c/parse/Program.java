@@ -10,25 +10,32 @@ import lang.c.CToken;
 import lang.c.CTokenizer;
 
 public class Program extends CParseRule {
-	// program ::= { statement } EOF
-	private CParseRule program;
+	// program ::= { declaration } { statement } EOF
+	private CParseRule decl, program;
 	private ArrayList<CParseRule> state;
 
 	public Program(CParseContext pcx) {
 		state = new ArrayList<CParseRule>();
 	}
 	public static boolean isFirst(CToken tk) {
-		return Statement.isFirst(tk) || tk.getType() == CToken.TK_EOF;
+		return Declaration.isFirst(tk) || Statement.isFirst(tk) || tk.getType() == CToken.TK_EOF;
 	}
 	public void parse(CParseContext pcx) throws FatalErrorException {
 		// ここにやってくるときは、必ずisFirst()が満たされている
 		CTokenizer ct = pcx.getTokenizer();
 		CToken tk = ct.getCurrentToken(pcx);
+
+		while(Declaration.isFirst(tk)) {
+			decl = new Declaration(pcx);
+			decl.parse(pcx);
+			state.add(decl);
+			tk = ct.getCurrentToken(pcx);
+		}
 		while(Statement.isFirst(tk)) {
 			program = new Statement(pcx);
 			program.parse(pcx);
 			state.add(program);
-			tk = ct.getNextToken(pcx);
+			tk = ct.getCurrentToken(pcx);
 		}
 
 		if (tk.getType() != CToken.TK_EOF) {
@@ -46,6 +53,9 @@ public class Program extends CParseRule {
 		o.println("\t. = 0x100");
 		o.println("\tJMP\t__START\t; ProgramNode: 最初の実行文へ");
 		// ここには将来、宣言に対するコード生成が必要
+		if (decl != null) {
+
+		}
 		if (program != null) {
 			o.println("__START:");
 			o.println("\tMOV\t#0x1000, R6\t; ProgramNode: 計算用スタック初期化");
