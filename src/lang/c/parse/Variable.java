@@ -52,7 +52,7 @@ public class Variable extends CParseRule{
 	}
 
 	public void codeGen(CParseContext pcx) throws FatalErrorException {
-		PrintStream o = pcx.getIOContext().getOutStream();
+		//PrintStream o = pcx.getIOContext().getOutStream();
 		if(ident != null){
 			ident.codeGen(pcx);
 		}

@@ -1,24 +1,36 @@
 package lang.c.parse;
 
 import java.io.PrintStream;
-import lang.*;
-import lang.c.*;
+import java.util.ArrayList;
+
+import lang.FatalErrorException;
+import lang.c.CParseContext;
+import lang.c.CParseRule;
+import lang.c.CToken;
+import lang.c.CTokenizer;
 
 public class Program extends CParseRule {
-	// program ::= expression EOF
+	// program ::= { statement } EOF
 	private CParseRule program;
+	private ArrayList<CParseRule> state;
 
 	public Program(CParseContext pcx) {
+		state = new ArrayList<CParseRule>();
 	}
 	public static boolean isFirst(CToken tk) {
-		return Expression.isFirst(tk);
+		return Statement.isFirst(tk) || tk.getType() == CToken.TK_EOF;
 	}
 	public void parse(CParseContext pcx) throws FatalErrorException {
 		// ここにやってくるときは、必ずisFirst()が満たされている
-		program = new Expression(pcx);
-		program.parse(pcx);
 		CTokenizer ct = pcx.getTokenizer();
 		CToken tk = ct.getCurrentToken(pcx);
+		while(Statement.isFirst(tk)) {
+			program = new Statement(pcx);
+			program.parse(pcx);
+			state.add(program);
+			tk = ct.getNextToken(pcx);
+		}
+
 		if (tk.getType() != CToken.TK_EOF) {
 			pcx.fatalError(tk.toExplainString() + "プログラムの最後にゴミがあります");
 		}
