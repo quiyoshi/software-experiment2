@@ -26,7 +26,7 @@ public class Ident  extends CParseRule {
 	}
 
 	public void semanticCheck(CParseContext pcx) throws FatalErrorException {
-		this.setCType(CType.getCType(CType.T_aint));			//実験4時点では変数宣言が行えないため、仮定しておく
+		this.setCType(CType.getCType(CType.T_int));			//実験4時点では変数宣言が行えないため、仮定しておく
 		this.setConstant(false);			//変数は定数ではない
 	}
 

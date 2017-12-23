@@ -1,7 +1,5 @@
 package lang.c.parse;
 
-import java.io.PrintStream;
-
 import lang.FatalErrorException;
 import lang.c.CParseContext;
 import lang.c.CParseRule;
@@ -35,6 +33,9 @@ public class Statement extends CParseRule{
 	}
 
 	public void codeGen(CParseContext pcx) throws FatalErrorException {
-		PrintStream o = pcx.getIOContext().getOutStream();
+		//PrintStream o = pcx.getIOContext().getOutStream();
+		if (child != null) {
+			child.codeGen(pcx);
+		}
 	}
 }

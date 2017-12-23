@@ -62,5 +62,12 @@ public class StatementAssign extends CParseRule{
 
 	public void codeGen(CParseContext pcx) throws FatalErrorException {
 		PrintStream o = pcx.getIOContext().getOutStream();
+		if (primary != null && expression != null) {
+			expression.codeGen(pcx);
+			primary.codeGen(pcx);
+			o.println("\tMOV\t-(R6), R0\t; StatementAssign: 左辺の変数に右辺の値を書き込む");
+			o.println("\tMOV\t-(R6), (R0)\t; StatementAssign:");
+		}
+
 	}
 }
