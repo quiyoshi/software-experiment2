@@ -30,7 +30,7 @@ public class Statement extends CParseRule{
 
 	public void semanticCheck(CParseContext pcx) throws FatalErrorException {
 		if (child != null) {
-
+			child.semanticCheck(pcx);
 		}
 	}
 

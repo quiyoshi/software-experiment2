@@ -45,8 +45,18 @@ public class StatementAssign extends CParseRule{
 	}
 
 	public void semanticCheck(CParseContext pcx) throws FatalErrorException {
-		if (primary != null) {
+		if (primary != null && expression != null) {
+			primary.semanticCheck(pcx);
+			expression.semanticCheck(pcx);
 
+			if (primary.isConstant()) {
+				pcx.fatalError(assign.toExplainString() + "定数に代入はできません");
+			}
+			if (primary.getCType() != expression.getCType()) {
+				pcx.fatalError(assign.toExplainString() +
+						"左辺の型[" + primary.getCType().toString() +
+						"]に右辺の型[" + expression.getCType().toString() + "]は代入できません");
+			}
 		}
 	}
 
