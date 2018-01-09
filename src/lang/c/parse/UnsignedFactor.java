@@ -102,8 +102,8 @@ class FactorAMP extends CParseRule {
 				}
 			}
 
-			if(number.getCType() == CType.getCType(CType.T_int) && !number.isConstant()){
-				setCType(number.getCType());
+			if((number.getCType() == CType.getCType(CType.T_int) || number.getCType() == CType.getCType(CType.T_aint)) && !number.isConstant()){
+				setCType(CType.getCType(CType.T_pint));	// アドレス演算子なのでポインタになる
 				setConstant(number.isConstant());	// number は常に変数
 			} else {
 				pcx.fatalError(amp.toExplainString() + "&の後ろはint型変数にしてください");

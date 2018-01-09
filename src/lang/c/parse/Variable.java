@@ -107,7 +107,9 @@ class Array extends CParseRule{
 		if (expression != null){
 			o.println(";;; array starts");
 			expression.codeGen(pcx);
-			o.println("\tADD\t-(R6), R6\t; Array:基点アドレスから変位だけSPをずらす");
+			o.println("\tMOV\t-(R6), R0\t; Array:基点アドレスから変位だけSPをずらす");
+			o.println("\tADD\t-(R6), R0\t; Array:");
+			o.println("\tMOV\tR0, (R6)\t; Array:");
 			o.println(";;; array completes");
 		}
 	}
