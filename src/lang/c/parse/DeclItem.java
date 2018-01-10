@@ -1,18 +1,21 @@
 package lang.c.parse;
 
-import java.io.PrintStream;
-
 import lang.FatalErrorException;
 import lang.c.CParseContext;
 import lang.c.CParseRule;
+import lang.c.CSymbolTableEntry;
 import lang.c.CToken;
 import lang.c.CTokenizer;
+import lang.c.CType;
 
 public class DeclItem extends CParseRule {
 	// declItem ::= [ MULT ] IDENT [ LBRA number RBRA ]
 
 	private CToken mul, lbra, rbra;
 	private CToken ident;
+	private CType entry;
+	private int words;
+	private CSymbolTableEntry symbol;
 	private CParseRule number;
 	public DeclItem(CParseContext pcx) {
 	}
@@ -23,8 +26,11 @@ public class DeclItem extends CParseRule {
 		// ここにやってくるときは、必ずisFirst()が満たされている
 		CTokenizer ct = pcx.getTokenizer();
 		CToken tk = ct.getCurrentToken(pcx);
+		entry = CType.getCType(CType.T_int);
+		words = 1;
 
 		if(CToken.TK_MUL == tk.getType()){
+			entry = CType.getCType(CType.T_pint);
 			mul = tk;
 			tk = ct.getNextToken(pcx);
 		}
@@ -49,8 +55,18 @@ public class DeclItem extends CParseRule {
 				pcx.fatalError(tk.toExplainString() + "]を付けてください");
 			}
 			rbra = tk;
-
 			tk = ct.getNextToken(pcx);
+
+			entry = (entry == CType.getCType(CType.T_int)) ? CType.getCType(CType.T_aint) : CType.getCType(CType.T_apint);
+			words = ((Number)number).getNumber();
+		}
+
+		symbol = new CSymbolTableEntry(entry, words, false, true, 0);		// 型, ワード数, 定数, 大域変数, アドレス
+
+		if(pcx.getSymbolTable().searchGlobal(ident.getText()) == null) {
+			pcx.getSymbolTable().register(ident.getText(), symbol);
+		} else {
+			pcx.fatalError(ident.toExplainString() + "変数名" + ident.getText() + "はすでに宣言されています");
 		}
 	}
 
@@ -59,6 +75,6 @@ public class DeclItem extends CParseRule {
 	}
 
 	public void codeGen(CParseContext pcx) throws FatalErrorException {
-		PrintStream o = pcx.getIOContext().getOutStream();
+		//PrintStream o = pcx.getIOContext().getOutStream();
 	}
 }

@@ -1,10 +1,13 @@
 package lang.c;
 
-import lang.*;
+import lang.IOContext;
+import lang.ParseContext;
 
 public class CParseContext extends ParseContext {
+	private CSymbolTable symbolTable;
 	public CParseContext(IOContext ioCtx,  CTokenizer tknz) {
 		super(ioCtx, tknz);
+		symbolTable = new CSymbolTable();
 	}
 
 	@Override
@@ -12,4 +15,5 @@ public class CParseContext extends ParseContext {
 
 	private int seqNo = 0;
 	public int getSeqId() { return ++seqNo; }
+	public CSymbolTable getSymbolTable() { return symbolTable; }
 }

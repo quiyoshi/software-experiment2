@@ -37,6 +37,9 @@ public class Program extends CParseRule {
 			state.add(program);
 			tk = ct.getCurrentToken(pcx);
 		}
+		if(Declaration.isFirst(tk)) {
+			pcx.fatalError(tk.toExplainString() + "変数宣言は先頭で行ってください");
+		}
 
 		if (tk.getType() != CToken.TK_EOF) {
 			pcx.fatalError(tk.toExplainString() + "プログラムの最後にゴミがあります");
@@ -44,7 +47,9 @@ public class Program extends CParseRule {
 	}
 
 	public void semanticCheck(CParseContext pcx) throws FatalErrorException {
-		if (program != null) { program.semanticCheck(pcx); }
+		for(CParseRule index: state) {
+			if (index != null) { index.semanticCheck(pcx); }
+		}
 	}
 
 	public void codeGen(CParseContext pcx) throws FatalErrorException {
@@ -56,10 +61,12 @@ public class Program extends CParseRule {
 		if (decl != null) {
 
 		}
-		if (program != null) {
+		if (state.size() > 0) {
 			o.println("__START:");
 			o.println("\tMOV\t#0x1000, R6\t; ProgramNode: 計算用スタック初期化");
-			program.codeGen(pcx);
+			for(CParseRule index: state) {			// Statementの数だけコード生成を行う.
+				index.codeGen(pcx);
+			}
 			o.println("\tMOV\t-(R6), R0\t; ProgramNode: 計算結果確認用");
 		}
 		o.println("\tHLT\t\t\t; ProgramNode:");
