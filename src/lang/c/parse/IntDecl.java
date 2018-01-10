@@ -1,6 +1,5 @@
 package lang.c.parse;
 
-import java.io.PrintStream;
 import java.util.ArrayList;
 
 import lang.FatalErrorException;
@@ -52,6 +51,9 @@ public class IntDecl extends CParseRule {
 	}
 
 	public void codeGen(CParseContext pcx) throws FatalErrorException {
-		PrintStream o = pcx.getIOContext().getOutStream();
+		//PrintStream o = pcx.getIOContext().getOutStream();
+		for(CParseRule index: declarations){
+			index.codeGen(pcx);
+		}
 	}
 }

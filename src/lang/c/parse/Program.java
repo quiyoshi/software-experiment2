@@ -12,9 +12,10 @@ import lang.c.CTokenizer;
 public class Program extends CParseRule {
 	// program ::= { declaration } { statement } EOF
 	private CParseRule decl, program;
-	private ArrayList<CParseRule> state;
+	private ArrayList<CParseRule> declare, state;
 
 	public Program(CParseContext pcx) {
+		declare = new ArrayList<CParseRule>();
 		state = new ArrayList<CParseRule>();
 	}
 	public static boolean isFirst(CToken tk) {
@@ -28,7 +29,7 @@ public class Program extends CParseRule {
 		while(Declaration.isFirst(tk)) {
 			decl = new Declaration(pcx);
 			decl.parse(pcx);
-			state.add(decl);
+			declare.add(decl);
 			tk = ct.getCurrentToken(pcx);
 		}
 		while(Statement.isFirst(tk)) {
@@ -47,6 +48,9 @@ public class Program extends CParseRule {
 	}
 
 	public void semanticCheck(CParseContext pcx) throws FatalErrorException {
+		for(CParseRule index: declare) {
+			if (index != null) { index.semanticCheck(pcx); }
+		}
 		for(CParseRule index: state) {
 			if (index != null) { index.semanticCheck(pcx); }
 		}
@@ -58,8 +62,10 @@ public class Program extends CParseRule {
 		o.println("\t. = 0x100");
 		o.println("\tJMP\t__START\t; ProgramNode: 最初の実行文へ");
 		// ここには将来、宣言に対するコード生成が必要
-		if (decl != null) {
-
+		if (declare.size() > 0) {
+			for(CParseRule index: declare) {			// Declarationの数だけコード生成を行う.
+				index.codeGen(pcx);
+			}
 		}
 		if (state.size() > 0) {
 			o.println("__START:");
