@@ -42,8 +42,11 @@ public class Variable extends CParseRule{
 
 			if(array != null){
 				array.semanticCheck(pcx);
+				this.setCType(
+						(this.getCType() == CType.getCType(CType.T_aint)) ? CType.getCType(CType.T_int) : CType.getCType(CType.T_pint)
+				);
 			} else {
-				if(this.getCType() == CType.getCType(CType.T_aint)){
+				if(this.getCType() == CType.getCType(CType.T_aint) || this.getCType() == CType.getCType(CType.T_apint)){
 					pcx.fatalError(arr.toExplainString() + "配列名の識別子が誤っています");
 				}
 			}
@@ -107,7 +110,9 @@ class Array extends CParseRule{
 		if (expression != null){
 			o.println(";;; array starts");
 			expression.codeGen(pcx);
-			o.println("\tADD\t-(R6), R6\t; Array:基点アドレスから変位だけSPをずらす");
+			o.println("\tMOV\t-(R6), R0\t; Array:基点アドレスから変位だけSPをずらす");
+			o.println("\tADD\t-(R6), R0\t; Array:");
+			o.println("\tMOV\tR0, (R6)\t; Array:");
 			o.println(";;; array completes");
 		}
 	}

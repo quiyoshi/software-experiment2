@@ -5,13 +5,14 @@ import java.io.PrintStream;
 import lang.FatalErrorException;
 import lang.c.CParseContext;
 import lang.c.CParseRule;
+import lang.c.CSymbolTableEntry;
 import lang.c.CToken;
 import lang.c.CTokenizer;
-import lang.c.CType;
 
 public class Ident  extends CParseRule {
 	// ident ::= IDENT
 	private CToken ident;
+	private CSymbolTableEntry entry;
 	public Ident(CParseContext pcx) {
 	}
 	public static boolean isFirst(CToken tk) {
@@ -23,11 +24,14 @@ public class Ident  extends CParseRule {
 		CToken tk = ct.getCurrentToken(pcx);
 		ident = tk;							//ここで綴りを保存しておく
 		tk = ct.getNextToken(pcx);
+		if((entry = pcx.getSymbolTable().searchGlobal(ident.getText())) == null) {
+			pcx.fatalError(ident.toExplainString() + "変数" + ident.getText() + "は未定義です");
+		}
 	}
 
 	public void semanticCheck(CParseContext pcx) throws FatalErrorException {
-		this.setCType(CType.getCType(CType.T_int));			//実験4時点では変数宣言が行えないため、仮定しておく
-		this.setConstant(false);			//変数は定数ではない
+		this.setCType(entry.getCType());
+		this.setConstant(entry.isConst());
 	}
 
 	public void codeGen(CParseContext pcx) throws FatalErrorException {

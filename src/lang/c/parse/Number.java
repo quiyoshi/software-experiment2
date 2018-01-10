@@ -2,8 +2,12 @@ package lang.c.parse;
 
 import java.io.PrintStream;
 
-import lang.*;
-import lang.c.*;
+import lang.FatalErrorException;
+import lang.c.CParseContext;
+import lang.c.CParseRule;
+import lang.c.CToken;
+import lang.c.CTokenizer;
+import lang.c.CType;
 
 public class Number extends CParseRule {
 	// number ::= NUM
@@ -32,5 +36,9 @@ public class Number extends CParseRule {
 			o.println("\tMOV\t#" + num.getText() + ", (R6)+\t; Number: 数を積む<" + num.toExplainString() + ">");
 		}
 		o.println(";;; number completes");
+	}
+
+	public int getNumber() {
+		return Integer.parseInt(num.getText());
 	}
 }
