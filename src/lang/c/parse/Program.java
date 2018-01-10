@@ -37,7 +37,9 @@ public class Program extends CParseRule {
 	}
 
 	public void semanticCheck(CParseContext pcx) throws FatalErrorException {
-		if (program != null) { program.semanticCheck(pcx); }
+		for(int index = 0; index < state.size(); index++) {
+			if (state.get(index) != null) { state.get(index).semanticCheck(pcx); }
+		}
 	}
 
 	public void codeGen(CParseContext pcx) throws FatalErrorException {
@@ -49,7 +51,9 @@ public class Program extends CParseRule {
 		if (program != null) {
 			o.println("__START:");
 			o.println("\tMOV\t#0x1000, R6\t; ProgramNode: 計算用スタック初期化");
-			program.codeGen(pcx);
+			for(int index = 0; index < state.size(); index++) {			// Statementの数だけコード生成を行う.
+				state.get(index).codeGen(pcx);
+			}
 			o.println("\tMOV\t-(R6), R0\t; ProgramNode: 計算結果確認用");
 		}
 		o.println("\tHLT\t\t\t; ProgramNode:");
