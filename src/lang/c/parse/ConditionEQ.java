@@ -25,6 +25,7 @@ public class ConditionEQ extends CParseRule{
 		CToken tk = ct.getCurrentToken(pcx);
 		eq = tk;
 
+		tk = ct.getNextToken(pcx);
 		if(Expression.isFirst(tk)) {
 			expression = new Expression(pcx);
 			expression.parse(pcx);
@@ -36,6 +37,7 @@ public class ConditionEQ extends CParseRule{
 	public void semanticCheck(CParseContext pcx) throws FatalErrorException {
 		if (expression != null) {
 			expression.semanticCheck(pcx);
+			this.setCType(expression.getCType());
 		}
 	}
 

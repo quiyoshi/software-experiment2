@@ -7,5 +7,4 @@ const int a = 1;
 i = &var;
 state[state[2]+3] = 0;
 */
-
-== = = != !  =
+4 >= 5

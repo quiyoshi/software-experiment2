@@ -23,8 +23,9 @@ public class ConditionLE extends CParseRule{
 		// ここにやってくるときは、必ずisFirst()が満たされている
 		CTokenizer ct = pcx.getTokenizer();
 		CToken tk = ct.getCurrentToken(pcx);
-
 		le = tk;
+
+		tk = ct.getNextToken(pcx);
 		if(Expression.isFirst(tk)) {
 			expression = new Expression(pcx);
 			expression.parse(pcx);
@@ -36,6 +37,7 @@ public class ConditionLE extends CParseRule{
 	public void semanticCheck(CParseContext pcx) throws FatalErrorException {
 		if (expression != null) {
 			expression.semanticCheck(pcx);
+			this.setCType(expression.getCType());
 		}
 	}
 
