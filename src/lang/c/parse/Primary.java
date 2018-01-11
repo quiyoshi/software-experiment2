@@ -39,7 +39,7 @@ public class Primary extends CParseRule {
 	}
 
 	public void codeGen(CParseContext pcx) throws FatalErrorException {
-		PrintStream o = pcx.getIOContext().getOutStream();
+		//PrintStream o = pcx.getIOContext().getOutStream();
 		if (primary != null) {
 			primary.codeGen(pcx);
 		}
@@ -78,10 +78,10 @@ class PrimaryMult  extends CParseRule {
 	public void semanticCheck(CParseContext pcx) throws FatalErrorException {
 		if (variable != null) {
 			variable.semanticCheck(pcx);
-			if(variable.getCType() == CType.getCType(CType.T_int)){
+			if(variable.getCType() != CType.getCType(CType.T_pint) && variable.getCType() != CType.getCType(CType.T_apint)){
 				pcx.fatalError(mult.toExplainString() + "int型をポインタ参照できません");
 			}
-			this.setCType(variable.getCType());
+			this.setCType(CType.getCType(CType.T_int));		// ポインタからint型へ変換
 			this.setConstant(variable.isConstant());
 		}
 	}
