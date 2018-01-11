@@ -6,6 +6,7 @@ public class CType {
 	public static final int T_pint		= 2;		// int*
 	public static final int T_aint       = 3;		// int[]
 	public static final int T_apint		= 4;		// int*[]
+	public static final int T_bool		= 5;		// boolean
 
 	private static CType[] typeArray = {
 		new CType(T_err,	"error"),
@@ -13,6 +14,7 @@ public class CType {
 		new CType(T_pint,	"int*"),
 		new CType(T_aint,	"int[]"),
 		new CType(T_apint,	"int*[]"),
+		new CType(T_bool,	"boolean"),
 	};
 
 	private int type;

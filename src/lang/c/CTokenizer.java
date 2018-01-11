@@ -147,6 +147,18 @@ public class CTokenizer extends Tokenizer<CToken, CParseContext> {
 					startCol = colNo - 1;
 					text.append(ch);
 					state = 24;
+				} else if (ch == '<'){
+					startCol = colNo - 1;
+					text.append(ch);
+					state = 25;
+				} else if (ch == '>'){
+					startCol = colNo - 1;
+					text.append(ch);
+					state = 27;
+				} else if (ch == '!'){
+					startCol = colNo - 1;
+					text.append(ch);
+					state = 30;
 				} else {			// ヘンな文字を読んだ
 					startCol = colNo - 1;
 					text.append(ch);
@@ -287,16 +299,23 @@ public class CTokenizer extends Tokenizer<CToken, CParseContext> {
 					backChar(ch);
 					state = 21;
 				}
-				break;				// 単なる識別子かキーワードかのチェック
-			case 21:
+				break;
+			case 21:				// 単なる識別子かキーワードかのチェック
 				String s = text.toString();
 				Integer i =  (Integer) rule.get(s);
 				tk = new CToken(((i == null) ? CToken.TK_IDENT : i.intValue()), lineNo, startCol, text.toString());
 				accept = true;
 				break;
-			case 22:				// アサイン（=）
-				tk = new CToken(CToken.TK_ASSIGN, lineNo, startCol, text.toString());
-				accept = true;
+			case 22:				// アサイン（=）or 等号演算子（==）
+				ch =readChar();
+				if(ch == '=') {
+					text.append(ch);
+					state = 29;
+				} else {
+					tk = new CToken(CToken.TK_ASSIGN, lineNo, startCol, text.toString());
+					backChar(ch);
+					accept = true;
+				}
 				break;
 			case 23:				// セミコロン（;）
 				tk = new CToken(CToken.TK_SEMI, lineNo, startCol, text.toString());
@@ -304,6 +323,54 @@ public class CTokenizer extends Tokenizer<CToken, CParseContext> {
 				break;
 			case 24:				// コンマ（,）
 				tk = new CToken(CToken.TK_COMMA, lineNo, startCol, text.toString());
+				accept = true;
+				break;
+			case 25:				// 比較演算子（< or <=）
+				ch =readChar();
+				if(ch == '=') {
+					text.append(ch);
+					state = 26;
+				} else {
+					tk = new CToken(CToken.TK_LT, lineNo, startCol, text.toString());
+					backChar(ch);
+					accept = true;
+				}
+				break;
+			case 26:				// 比較演算子（<=）
+				tk = new CToken(CToken.TK_LE, lineNo, startCol, text.toString());
+				accept = true;
+				break;
+			case 27:				// 比較演算子（> or >=）
+				ch =readChar();
+				if(ch == '=') {
+					text.append(ch);
+					state = 28;
+				} else {
+					tk = new CToken(CToken.TK_GT, lineNo, startCol, text.toString());
+					backChar(ch);
+					accept = true;
+				}
+				break;
+			case 28:				// 比較演算子（>=）
+				tk = new CToken(CToken.TK_GE, lineNo, startCol, text.toString());
+				accept = true;
+				break;
+			case 29:				// 等号演算子 (==)
+				tk = new CToken(CToken.TK_EQ, lineNo, startCol, text.toString());
+				accept = true;
+				break;
+			case 30:				// 等号演算子（!=）
+				ch =readChar();
+				if(ch == '=') {
+					text.append(ch);
+					state = 31;
+				} else {
+					backChar(ch);
+					state = 2;
+				}
+				break;
+			case 31:				// 等号演算子（!=）
+				tk = new CToken(CToken.TK_NE, lineNo, startCol, text.toString());
 				accept = true;
 				break;
 			}
