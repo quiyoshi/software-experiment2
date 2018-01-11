@@ -58,5 +58,8 @@ public class ConstDecl extends CParseRule {
 
 	public void codeGen(CParseContext pcx) throws FatalErrorException {
 		//PrintStream o = pcx.getIOContext().getOutStream();
+		for(CParseRule index: declarations){
+			index.codeGen(pcx);
+		}
 	}
 }

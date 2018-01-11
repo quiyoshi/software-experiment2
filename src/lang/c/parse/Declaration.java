@@ -35,5 +35,6 @@ public class Declaration extends CParseRule{
 
 	public void codeGen(CParseContext pcx) throws FatalErrorException {
 		//PrintStream o = pcx.getIOContext().getOutStream();
+		decl.codeGen(pcx);
 	}
 }

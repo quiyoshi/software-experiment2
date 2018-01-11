@@ -1,5 +1,7 @@
 package lang.c.parse;
 
+import java.io.PrintStream;
+
 import lang.FatalErrorException;
 import lang.c.CParseContext;
 import lang.c.CParseRule;
@@ -75,6 +77,11 @@ public class DeclItem extends CParseRule {
 	}
 
 	public void codeGen(CParseContext pcx) throws FatalErrorException {
-		//PrintStream o = pcx.getIOContext().getOutStream();
+		PrintStream o = pcx.getIOContext().getOutStream();
+		if(entry == CType.getCType(CType.T_int) || entry == CType.getCType(CType.T_pint)){
+			o.println("\t" + ident.getText() + ":\t.WORD\t0\t; DeclItem: 単純変数、ポインタ変数用の領域確保");
+		} else {
+			o.println("\t" + ident.getText() + ":\t.BLKM\t"+ words +"\t; DeclItem: 配列変数用の領域確保");
+		}
 	}
 }
