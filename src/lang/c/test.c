@@ -8,4 +8,4 @@ int state[5], var;
 int *i;
 const int a = 1;
 i = &var;
-state[state[2]] = 0;
+state[state[2]+3] = 0;
