@@ -50,8 +50,13 @@ public class ConstItem extends CParseRule {
 		}
 
 		if(CToken.TK_AMP == tk.getType()){
+			if(mul == null) {
+				pcx.fatalError(tk.toExplainString() + "整数型定数にアドレス値は代入できません");
+			}
 			amp = tk;
 			tk = ct.getNextToken(pcx);
+		} else if(mul != null){
+			pcx.fatalError(tk.toExplainString() + "ポインタ型定数に整数値は代入できません");
 		}
 
 		if(!Number.isFirst(tk)){
