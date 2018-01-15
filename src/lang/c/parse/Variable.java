@@ -42,6 +42,9 @@ public class Variable extends CParseRule{
 
 			if(array != null){
 				array.semanticCheck(pcx);
+				if(this.getCType() == CType.getCType(CType.T_int) || this.getCType() == CType.getCType(CType.T_pint)){
+					pcx.fatalError(arr.toExplainString() + "変数" + arr.getText() +"は配列として使用できません");
+				}
 				this.setCType(
 						(this.getCType() == CType.getCType(CType.T_aint)) ? CType.getCType(CType.T_int) : CType.getCType(CType.T_pint)
 				);
@@ -50,7 +53,6 @@ public class Variable extends CParseRule{
 					pcx.fatalError(arr.toExplainString() + "配列名の識別子が誤っています");
 				}
 			}
-
 		}
 	}
 
