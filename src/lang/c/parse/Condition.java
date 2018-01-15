@@ -81,6 +81,12 @@ public class Condition extends CParseRule{
 			else {
 				pcx.fatalError(logic.toExplainString() + "条件を解決できません");
 			}
+		} else {
+			if(logic.getType() == CToken.TK_TRUE) { this.codeGenTrue(pcx); }
+			else if(logic.getType() == CToken.TK_FALSE) { this.codeGenFalse(pcx); }
+			else {
+				pcx.fatalError(logic.toExplainString() + "boolean変数を解決できません");
+			}
 		}
 	}
 
@@ -106,10 +112,10 @@ public class Condition extends CParseRule{
 		o.println("\tMOV\t-(R6), R1\t; ConditionLE: ");
 		o.println("\tMOV\t0x0001, R2\t; ConditionLE: set true");
 		o.println("\tCMP\tR0, R1\t; ConditionLE: R1<=R0 = R1-R0<=0");		// CMP F, T :  T - F → PSW ; 左辺 <= 右辺
-		o.println("\tBRN\tLT" + seq + " ; ConditionLE:");				// 左辺 - 右辺 < 0 ならジャンプ
-		o.println("\tBRZ\tLT" + seq + " ; ConditionLE:");				// 左辺 - 右辺 = 0 ならジャンプ
+		o.println("\tBRN\tLE" + seq + " ; ConditionLE:");				// 左辺 - 右辺 < 0 ならジャンプ
+		o.println("\tBRZ\tLE" + seq + " ; ConditionLE:");				// 左辺 - 右辺 = 0 ならジャンプ
 		o.println("\tCLR\tR2\t\t; ConditionLE: set false");
-		o.println("LT" + seq + ":\tMOV\tR2, (R6)+\t; ConditionLE");
+		o.println("LE" + seq + ":\tMOV\tR2, (R6)+\t; ConditionLE");
 
 		o.println(";;; condition <= (compare) completes");
 	}
@@ -121,9 +127,9 @@ public class Condition extends CParseRule{
 		o.println("\tMOV\t-(R6), R1\t; ConditionGT: ");
 		o.println("\tMOV\t0x0001, R2\t; ConditionGT: set true");
 		o.println("\tCMP\tR1, R0\t; ConditionGT: R1>R0 = 0>R0-R1");		// CMP F, T :  T - F → PSW ; 左辺 > 右辺
-		o.println("\tBRN\tLT" + seq + " ; ConditionGT:");				// 左辺 - 右辺 > 0 ならジャンプ
+		o.println("\tBRN\tGT" + seq + " ; ConditionGT:");				// 左辺 - 右辺 > 0 ならジャンプ
 		o.println("\tCLR\tR2\t\t; ConditionGT: set false");
-		o.println("LT" + seq + ":\tMOV\tR2, (R6)+\t; ConditionGT");
+		o.println("GT" + seq + ":\tMOV\tR2, (R6)+\t; ConditionGT");
 
 		o.println(";;;condition > (compare) completes");
 	}
@@ -135,10 +141,10 @@ public class Condition extends CParseRule{
 		o.println("\tMOV\t-(R6), R1\t; ConditionGE: ");
 		o.println("\tMOV\t0x0001, R2\t; ConditionGE: set true");
 		o.println("\tCMP\tR1, R0\t; ConditionGE: R1>=R0 = 0>=R0-R1");		// CMP F, T :  T - F → PSW ; 左辺 >= 右辺
-		o.println("\tBRN\tLT" + seq + " ; ConditionGE:");				// 左辺 - 右辺 > 0 ならジャンプ
-		o.println("\tBRZ\tLT" + seq + " ; ConditionGE:");				// 左辺 - 右辺 = 0 ならジャンプ
+		o.println("\tBRN\tGE" + seq + " ; ConditionGE:");				// 左辺 - 右辺 > 0 ならジャンプ
+		o.println("\tBRZ\tGE" + seq + " ; ConditionGE:");				// 左辺 - 右辺 = 0 ならジャンプ
 		o.println("\tCLR\tR2\t\t; ConditionGE: set false");
-		o.println("LT" + seq + ":\tMOV\tR2, (R6)+\t; ConditionGE");
+		o.println("GE" + seq + ":\tMOV\tR2, (R6)+\t; ConditionGE");
 
 		o.println(";;;condition >= (compare) completes");
 	}
@@ -150,9 +156,9 @@ public class Condition extends CParseRule{
 		o.println("\tMOV\t-(R6), R1\t; ConditionEQ: ");
 		o.println("\tMOV\t0x0001, R2\t; ConditionEQ: set true");
 		o.println("\tCMP\tR0, R1\t; ConditionEQ: R1=R0 = R1-R0=0");		// CMP F, T :  T - F → PSW ; 左辺 = 右辺
-		o.println("\tBRZ\tLT" + seq + " ; ConditionEQ:");				// 左辺 - 右辺 = 0 ならジャンプ
+		o.println("\tBRZ\tEQ" + seq + " ; ConditionEQ:");				// 左辺 - 右辺 = 0 ならジャンプ
 		o.println("\tCLR\tR2\t\t; ConditionLT: set false");
-		o.println("LT" + seq + ":\tMOV\tR2, (R6)+\t; ConditionEQ");
+		o.println("EQ" + seq + ":\tMOV\tR2, (R6)+\t; ConditionEQ");
 
 		o.println(";;;condition == (compare) completes");
 	}
@@ -164,10 +170,26 @@ public class Condition extends CParseRule{
 		o.println("\tMOV\t-(R6), R1\t; ConditionNE: ");
 		o.println("\tCLR\tR2\t\t; ConditionNE: set false");
 		o.println("\tCMP\tR0, R1\t; ConditionNE: R1=R0 = R1-R0=0");		// CMP F, T :  T - F → PSW ; 左辺 = 右辺
-		o.println("\tBRZ\tLT" + seq + " ; ConditionNE:");				// 左辺 - 右辺 = 0 ならジャンプ
+		o.println("\tBRZ\tNE" + seq + " ; ConditionNE:");				// 左辺 - 右辺 = 0 ならジャンプ
 		o.println("\tMOV\t0x0001, R2\t; ConditionNE: set true");
-		o.println("LT" + seq + ":\tMOV\tR2, (R6)+\t; ConditionNE");
+		o.println("NE" + seq + ":\tMOV\tR2, (R6)+\t; ConditionNE");
 
 		o.println(";;;condition != (compare) completes");
+	}
+	private void codeGenTrue(CParseContext pcx) throws FatalErrorException {
+		PrintStream o = pcx.getIOContext().getOutStream();
+		o.println(";;;condition true starts");
+
+		o.println("\tMOV\t#0x0001, (R6)+\t; Condition: set true");
+
+		o.println(";;;condition true completes");
+	}
+	private void codeGenFalse(CParseContext pcx) throws FatalErrorException {
+		PrintStream o = pcx.getIOContext().getOutStream();
+		o.println(";;;condition false starts");
+
+		o.println("\tMOV\t#0x0000, (R6)+\t; Condition: set false");
+
+		o.println(";;;condition false completes");
 	}
 }

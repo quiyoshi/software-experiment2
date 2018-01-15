@@ -6,16 +6,15 @@ import lang.c.CParseRule;
 import lang.c.CToken;
 import lang.c.CTokenizer;
 
-public class Statement extends CParseRule{
-	// statement ::= statementIf | statementWhile | statementAssign | statementIn | statementOut
+public class StatementOut extends CParseRule{
+	// statementOut ::= OUTPUT expression SEMI
 
 	private CParseRule child;
-	public Statement(CParseContext pcx) {
+	public StatementOut(CParseContext pcx) {
 	}
 
 	public static boolean isFirst(CToken tk) {
-		return StatementIf.isFirst(tk) | StatementWhile.isFirst(tk) | StatementAssign.isFirst(tk)
-				| StatementIn.isFirst(tk) | StatementOut.isFirst(tk);
+		return CToken.TK_OUTPUT == tk.getType();
 	}
 
 	public void parse(CParseContext pcx) throws FatalErrorException {
@@ -23,22 +22,19 @@ public class Statement extends CParseRule{
 		CTokenizer ct = pcx.getTokenizer();
 		CToken tk = ct.getCurrentToken(pcx);
 
-		if(StatementIf.isFirst(tk)) {
-			child = new StatementIf(pcx);
-			child.parse(pcx);
-		} else if(StatementWhile.isFirst(tk)) {
-			child = new StatementWhile(pcx);
-			child.parse(pcx);
-		} else if(StatementAssign.isFirst(tk)){
-			child = new StatementAssign(pcx);
-			child.parse(pcx);
-		} else if(StatementIn.isFirst(tk)) {
-			child = new StatementIn(pcx);
-			child.parse(pcx);
-		} else {
-			child = new StatementOut(pcx);
-			child.parse(pcx);
+		tk = ct.getNextToken(pcx);
+		if(!Expression.isFirst(tk)) {
+			pcx.fatalError(tk.toExplainString() + "outputにはexpressionを用いてください");
 		}
+		child = new Expression(pcx);
+		child.parse(pcx);
+
+		tk = ct.getCurrentToken(pcx);
+		if(CToken.TK_SEMI != tk.getType()) {
+			pcx.fatalError(tk.toExplainString() + "文末には;を挿入してください");
+		}
+
+		tk = ct.getNextToken(pcx);
 	}
 
 	public void semanticCheck(CParseContext pcx) throws FatalErrorException {
@@ -53,4 +49,5 @@ public class Statement extends CParseRule{
 			child.codeGen(pcx);
 		}
 	}
+
 }
