@@ -1,5 +1,6 @@
 package lang.c.parse;
 
+import java.io.PrintStream;
 import java.util.ArrayList;
 
 import lang.FatalErrorException;
@@ -11,10 +12,12 @@ import lang.c.CTokenizer;
 public class StatementIf extends CParseRule{
 	// statementIf ::= IF LPAR condition RPAR LCUR  { statement } RCUR { statementElse }
 
-	private ArrayList<CParseRule> state;
+	private ArrayList<CParseRule> state, other;
 	private CParseRule condition, program;
+	private int seq;
 	public StatementIf(CParseContext pcx) {
 		state = new ArrayList<CParseRule>();
+		other = new ArrayList<CParseRule>();
 	}
 
 	public static boolean isFirst(CToken tk) {
@@ -65,7 +68,7 @@ public class StatementIf extends CParseRule{
 		while(StatementElse.isFirst(tk)) {
 			program = new StatementElse(pcx);
 			program.parse(pcx);
-			state.add(program);
+			other.add(program);
 			tk = ct.getCurrentToken(pcx);
 		}
 	}
@@ -77,22 +80,50 @@ public class StatementIf extends CParseRule{
 		for(CParseRule index: state) {
 			if (index != null) { index.semanticCheck(pcx); }
 		}
+		for(CParseRule index: other) {
+			if (index != null) { index.semanticCheck(pcx); }
+		}
 	}
 
 	public void codeGen(CParseContext pcx) throws FatalErrorException {
-		//PrintStream o = pcx.getIOContext().getOutStream();
+		PrintStream o = pcx.getIOContext().getOutStream();
+		o.println(";;;statement if starts");
+
+		// 条件文 true or false
 		if (condition != null) {
 			condition.codeGen(pcx);
 		}
+
+		seq = pcx.getSeqId();
+		o.println("\tMOV\t-(R6), R2\t; StatementIf: スタックから真偽値を降ろす");
+		o.println("\tBRZ\tIF" + seq + " ; StatementIf:");
+
+		// trueのときに実行するコード
+		for(CParseRule index: state) {
+			if (index != null) { index.codeGen(pcx); }
+		}
+		o.println("\tJMP\tEL" + seq + ":無条件でelse文にジャンプする");
+
+		// falseのときに実行するコード
+		o.println("IF" + seq + ":");
+		for(CParseRule index: other) {
+			if (index != null) { index.codeGen(pcx); }
+		}
+
+		o.println("EL" + seq + ":");
+
+
+		o.println(";;;statement if completes");
 	}
 
 }
 
 class StatementElse extends CParseRule {
-	// statementIf ::= ELSE [ IF LPAR condition RPAR ] LCUR { statement } RCUR
+	// statementElse ::= ELSE [ IF LPAR condition RPAR ] LCUR { statement } RCUR
 
 	private ArrayList<CParseRule> state;
 	private CParseRule condition, program;
+	private int seq;
 	public StatementElse(CParseContext pcx) {
 		state = new ArrayList<CParseRule>();
 	}
@@ -157,9 +188,22 @@ class StatementElse extends CParseRule {
 	}
 
 	public void codeGen(CParseContext pcx) throws FatalErrorException {
-		//PrintStream o = pcx.getIOContext().getOutStream();
+		PrintStream o = pcx.getIOContext().getOutStream();
+
+		// 条件文 true or false
 		if (condition != null) {
 			condition.codeGen(pcx);
+
+			seq = pcx.getSeqId();
+			o.println("\tMOV\t-(R6), R2\t; StatementElse: スタックから真偽値を降ろす");
+			o.println("\tBRZ\tIF" + seq + " ; StatementElse:");
+		}
+
+		for(CParseRule index: state) {
+			if (index != null) { index.codeGen(pcx); }
+		}
+		if (condition != null) {
+			o.println("IF" + seq + ":");
 		}
 	}
 

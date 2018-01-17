@@ -1,5 +1,7 @@
 package lang.c.parse;
 
+import java.io.PrintStream;
+
 import lang.FatalErrorException;
 import lang.c.CParseContext;
 import lang.c.CParseRule;
@@ -44,9 +46,16 @@ public class StatementIn extends CParseRule{
 	}
 
 	public void codeGen(CParseContext pcx) throws FatalErrorException {
-		//PrintStream o = pcx.getIOContext().getOutStream();
+		PrintStream o = pcx.getIOContext().getOutStream();
+		o.println(";;;statement input starts");
+
 		if (child != null) {
 			child.codeGen(pcx);
 		}
+		o.println("\tMOV\t#0xFFE0, R0\t; StatementIn:");
+		o.println("\tMOV\t-(R6), R1\t; StatementIn:");
+		o.println("\tMOV\t(R0), (R1)\t; StatementIn:");
+
+		o.println(";;;statement input completes");
 	}
 }

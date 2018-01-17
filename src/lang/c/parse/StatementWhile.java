@@ -1,5 +1,6 @@
 package lang.c.parse;
 
+import java.io.PrintStream;
 import java.util.ArrayList;
 
 import lang.FatalErrorException;
@@ -14,6 +15,7 @@ public class StatementWhile extends CParseRule{
 	private ArrayList<CParseRule> state;
 	private CParseRule condition, program;
 	private CToken wh;
+	private int seq;
 	public StatementWhile(CParseContext pcx) {
 		state = new ArrayList<CParseRule>();
 	}
@@ -75,10 +77,27 @@ public class StatementWhile extends CParseRule{
 	}
 
 	public void codeGen(CParseContext pcx) throws FatalErrorException {
-		//PrintStream o = pcx.getIOContext().getOutStream();
+		PrintStream o = pcx.getIOContext().getOutStream();
+		o.println(";;;statement while starts");
+
+		seq = pcx.getSeqId();
+		o.println("WH" + seq + ":");
+		// 条件文 true or false
 		if (condition != null) {
 			condition.codeGen(pcx);
 		}
+
+		o.println("\tMOV\t-(R6), R2\t; StatementWhile: スタックから真偽値を降ろす");
+		o.println("\tBRZ\tWE" + seq + " ; StatementWhile:");
+
+		for(CParseRule index: state) {
+			if (index != null) { index.codeGen(pcx); }
+		}
+
+		o.println("\tJMP\tWH" + seq + "\t; StatementWhile: 無条件でWhile文の最初に戻す");
+		o.println("WE" + seq + ":");
+
+		o.println(";;;statement while completes");
 	}
 
 }
