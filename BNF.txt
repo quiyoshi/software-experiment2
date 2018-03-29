@@ -1,0 +1,50 @@
+// プログラム
+program         ::= { declaration } { statement } EOF
+
+// 宣言部
+declaration     ::= intDecl | constDecl
+intDecl         ::= INT declItem { COMMA declItem } SEMI
+constDecl       ::= CONST INT constItem { COMMA constItem } SEMI
+constItem       ::= [ MULT ] IDENT ASSIGN [ AMP ] number
+declItem        ::= [ MULT ] IDENT [ LBRA number RBRA ]
+
+// コード部
+statement       ::= statementAssign | statementIfElse | statementWhile | statementIn | statementOut
+statementIfElse ::= statementIf [ ELSE ( statementIfElse | LCUR { statement } RCUR ) ]
+statementIf     ::= IF LPAR condition RPAR LCUR  { statement } RCUR
+statementWhile  ::= WHILE LPAR condition RPAR LCUR { statement } RCUR
+statementAssign ::= primary ASSIGN expression SEMI
+statementIn     ::= INPUT primary SEMI
+statementOut    ::= OUTPUT expression SEMI
+expression      ::= term { expressionAdd | expressionSub }
+expressionAdd   ::= PLUS term
+expressionSub   ::= MINUS term
+term            ::= factor { termMult | termDiv }
+termMult        ::= MULT factor
+termDiv         ::= DIV factor
+factor          ::= plusFactor | minusFactor | unsignedFactor
+plusFactor      ::= PLUS unsignedFactor
+minusFactor     ::= MINUS unsignedFactor
+unsignedFactor  ::= factorAmp | number | LPAR expression RPAR | addressToValue
+addressToValue  ::= primary
+factorAmp       ::= AMP ( number | primary )
+primary         ::= primaryMult | variable
+primaryMult     ::= MULT variable
+variable        ::= ident [ array ]
+array           ::= LBRA expression RBRA
+ident           ::= IDENT
+number          ::= NUM
+
+// 注釈
+PLUS  : +
+MINUS : -
+MULT  : *
+AMP   : &
+DIV   : /
+ASSIGN: =
+SEMI  : ;
+IDENT : 識別子
+NUM   : 数字
+BRA   : []
+PAR   : ()
+CUR   : {}
