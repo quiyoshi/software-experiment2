@@ -80,6 +80,6 @@ public class ConstItem extends CParseRule {
 
 	public void codeGen(CParseContext pcx) throws FatalErrorException {
 		PrintStream o = pcx.getIOContext().getOutStream();
-		o.println("\t" + ident.getText() + ":\t.WORD\t" + ((Number)number).getNumber() + "\t; ConstItem: 定数用の領域確保");
+		o.println(ident.getText() + ":\t.WORD\t" + ((Number)number).getNumber() + "\t; ConstItem: 定数用の領域確保");
 	}
 }

@@ -7,14 +7,14 @@ import lang.c.CToken;
 import lang.c.CTokenizer;
 
 public class Statement extends CParseRule{
-	// statement ::= statementIf | statementWhile | statementAssign | statementIn | statementOut
+	// statement ::= statementIfElse | statementWhile | statementAssign | statementIn | statementOut
 
 	private CParseRule child;
 	public Statement(CParseContext pcx) {
 	}
 
 	public static boolean isFirst(CToken tk) {
-		return StatementIf.isFirst(tk) | StatementWhile.isFirst(tk) | StatementAssign.isFirst(tk)
+		return StatementIfElse.isFirst(tk) | StatementWhile.isFirst(tk) | StatementAssign.isFirst(tk)
 				| StatementIn.isFirst(tk) | StatementOut.isFirst(tk);
 	}
 
@@ -23,8 +23,8 @@ public class Statement extends CParseRule{
 		CTokenizer ct = pcx.getTokenizer();
 		CToken tk = ct.getCurrentToken(pcx);
 
-		if(StatementIf.isFirst(tk)) {
-			child = new StatementIf(pcx);
+		if(StatementIfElse.isFirst(tk)) {
+			child = new StatementIfElse(pcx);
 			child.parse(pcx);
 		} else if(StatementWhile.isFirst(tk)) {
 			child = new StatementWhile(pcx);

@@ -94,7 +94,7 @@ public class StatementWhile extends CParseRule{
 			if (index != null) { index.codeGen(pcx); }
 		}
 
-		o.println("\tJMP\tWH" + seq + "\t; StatementWhile: 無条件でWhile文の最初に戻す");
+		o.println("\tJMP\tWH" + seq + "\t; StatementWhile: while文の最初に戻る");
 		o.println("WE" + seq + ":");
 
 		o.println(";;;statement while completes");

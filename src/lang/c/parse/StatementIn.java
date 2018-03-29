@@ -12,6 +12,7 @@ public class StatementIn extends CParseRule{
 	// statementIn ::= INPUT primary SEMI
 
 	private CParseRule child;
+	private CToken input;
 	public StatementIn(CParseContext pcx) {
 	}
 
@@ -23,6 +24,7 @@ public class StatementIn extends CParseRule{
 		// ここにやってくるときは、必ずisFirst()が満たされている
 		CTokenizer ct = pcx.getTokenizer();
 		CToken tk = ct.getCurrentToken(pcx);
+		input = tk;
 
 		tk = ct.getNextToken(pcx);
 		if(!Primary.isFirst(tk)) {
@@ -42,6 +44,9 @@ public class StatementIn extends CParseRule{
 	public void semanticCheck(CParseContext pcx) throws FatalErrorException {
 		if (child != null) {
 			child.semanticCheck(pcx);
+			if(child.isConstant()) {
+				pcx.fatalError(input.toExplainString()  + "定数に代入はできません");
+			}
 		}
 	}
 
