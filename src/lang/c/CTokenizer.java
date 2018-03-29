@@ -159,6 +159,14 @@ public class CTokenizer extends Tokenizer<CToken, CParseContext> {
 					startCol = colNo - 1;
 					text.append(ch);
 					state = 30;
+				} else if (ch == '{'){
+					startCol = colNo - 1;
+					text.append(ch);
+					state = 32;
+				} else if (ch == '}'){
+					startCol = colNo - 1;
+					text.append(ch);
+					state = 33;
 				} else {			// ヘンな文字を読んだ
 					startCol = colNo - 1;
 					text.append(ch);
@@ -371,6 +379,14 @@ public class CTokenizer extends Tokenizer<CToken, CParseContext> {
 				break;
 			case 31:				// 等号演算子（!=）
 				tk = new CToken(CToken.TK_NE, lineNo, startCol, text.toString());
+				accept = true;
+				break;
+			case 32:				// 左ブレイス（{）
+				tk = new CToken(CToken.TK_LCUR, lineNo, startCol, text.toString());
+				accept = true;
+				break;
+			case 33:				// 右ブレイス（}）
+				tk = new CToken(CToken.TK_RCUR, lineNo, startCol, text.toString());
 				accept = true;
 				break;
 			}
