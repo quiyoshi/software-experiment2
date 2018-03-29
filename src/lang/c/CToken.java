@@ -13,23 +13,32 @@ public class CToken extends SimpleToken {
 	public static final int TK_RPAR          = 8;				// )
 	public static final int TK_LBRA          = 9;				// [
 	public static final int TK_RBRA          = 10;				// ]
-	public static final int TK_ASSIGN		= 11;				// =
-	public static final int TK_SEMI			= 12;				// ;
-	public static final int TK_COMMA			= 13;				// ,
+	public static final int TK_LCUR			= 11;				// {
+	public static final int TK_RCUR			= 12;				// }
+	public static final int TK_ASSIGN		= 13;				// =
+	public static final int TK_SEMI			= 14;				// ;
+	public static final int TK_COMMA			= 15;				// ,
 
 	// Compare Operator
-	public static final int TK_LT			= 14;				// <
-	public static final int TK_LE			= 15;				// <=
-	public static final int TK_GT			= 16;				// >
-	public static final int TK_GE			= 17;				// >=
-	public static final int TK_EQ			= 18;				// ==
-	public static final int TK_NE			= 19;				// !=
+	public static final int TK_LT			= 21;				// <
+	public static final int TK_LE			= 22;				// <=
+	public static final int TK_GT			= 23;				// >
+	public static final int TK_GE			= 24;				// >=
+	public static final int TK_EQ			= 25;				// ==
+	public static final int TK_NE			= 26;				// !=
 
 	// Variable
-	public static final int TK_INT			= 20;				// int
-	public static final int TK_CONST			= 21;				// const
-	public static final int TK_TRUE			= 22;				// true
-	public static final int TK_FALSE			= 23;				// false
+	public static final int TK_INT			= 31;				// int
+	public static final int TK_CONST			= 32;				// const
+	public static final int TK_TRUE			= 33;				// true
+	public static final int TK_FALSE			= 34;				// false
+
+	// Condition
+	public static final int TK_IF			= 41;				// if
+	public static final int TK_ELSE			= 42;				// else
+	public static final int TK_WHILE			= 43;				// while
+	public static final int TK_INPUT			= 44;				// input
+	public static final int TK_OUTPUT		= 45;				// output
 
 	public CToken(int type, int lineNo, int colNo, String s) {
 		super(type, lineNo, colNo, s);
